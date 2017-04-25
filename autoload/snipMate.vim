@@ -560,32 +560,6 @@ endf
 
 " Pass an argument to force snippet expansion instead of triggering or jumping
 function! snipMate#TriggerSnippet(...) abort
-	if exists('g:SuperTabMappingForward')
-		if g:SuperTabMappingForward == "<tab>"
-			let SuperTabPlug = maparg('<Plug>SuperTabForward', 'i')
-			if SuperTabPlug == ""
-				let SuperTabKey = "\<c-n>"
-			else
-				exec "let SuperTabKey = \"" . escape(SuperTabPlug, '<') . "\""
-			endif
-		elseif g:SuperTabMappingBackward == "<tab>"
-			let SuperTabPlug = maparg('<Plug>SuperTabBackward', 'i')
-			if SuperTabPlug == ""
-				let SuperTabKey = "\<c-p>"
-			else
-				exec "let SuperTabKey = \"" . escape(SuperTabPlug, '<') . "\""
-			endif
-		endif
-	endif
-
-	if pumvisible() " Update snippet if completion is used, or deal with supertab
-		if exists('SuperTabKey')
-			call feedkeys(SuperTabKey) | return ''
-		endif
-		call feedkeys("\<esc>a", 'n') " Close completion menu
-		call feedkeys("\<tab>") | return ''
-	endif
-
 	if exists('b:snip_state') && a:0 == 0 " Jump only if no arguments
 		let jump = b:snip_state.jump_stop(0)
 		if type(jump) == 1 " returned a string
@@ -607,13 +581,8 @@ function! snipMate#TriggerSnippet(...) abort
 		return snipMate#expandSnip(snippet[0], snippet[1], col)
 	endif
 
-	" should allow other plugins to register hooks instead (duplicate code)
-	if exists('SuperTabKey')
-		call feedkeys(SuperTabKey)
-		return ''
-	endif
 	return word == ''
-	  \ ? "\<tab>"
+	  \ ? ""
 	  \ : "\<c-r>=snipMate#ShowAvailableSnips()\<cr>"
 endfunction
 
